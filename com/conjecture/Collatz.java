@@ -11,7 +11,7 @@ public class Collatz {
     private static final BigInteger TWO = new BigInteger("2");
     private static final BigInteger THREE = new BigInteger("3");
     private static BigInteger MIN = THREE.add(TWO);
-    private static final int threads = Runtime.getRuntime().availableProcessors()*2;
+    private static final int threads = Runtime.getRuntime().availableProcessors();
     private static final ThreadPoolExecutor executor =
             (ThreadPoolExecutor) Executors.newFixedThreadPool(threads);
     private static final Object lock = new Object();
@@ -30,11 +30,14 @@ public class Collatz {
             }
         }
         executor.prestartAllCoreThreads();
+        if(!i.mod(TWO).equals(BigInteger.ONE)){
+            i = i.add(BigInteger.ONE);
+        }        
         do {
             System.out.println(q.take());
             Runnable r = new SingleCollatz(i);
             executor.submit(r);
-            i = i.add(BigInteger.ONE);
+            i = i.add(TWO);
         } while(true);
     }
 
